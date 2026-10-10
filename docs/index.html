@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Market Screener</title>
+<meta name="description" content="Free Google Sheets market screener for US and India stocks, commodities, and crypto, with 20/50/200-day signals and Darvas boxes.">
+<style>
+  :root {
+    --bg: #fafaf7; --fg: #1d1d1b; --muted: #5f5f5a; --card: #ffffff; --line: #e3e2dc;
+    --accent: #1f6feb; --code-bg: #f1f0ea; --buy: #1a7f37; --sell: #b42318;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141413; --fg: #ecebe6; --muted: #a3a29a; --card: #1d1d1b; --line: #33332f;
+      --accent: #6cb0ff; --code-bg: #262622; --buy: #3fb950; --sell: #ff7b72;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141413; --fg: #ecebe6; --muted: #a3a29a; --card: #1d1d1b; --line: #33332f;
+    --accent: #6cb0ff; --code-bg: #262622; --buy: #3fb950; --sell: #ff7b72;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 2rem; margin: 0 0 4px; }
+  h2 { font-size: 1.25rem; margin: 40px 0 12px; padding-top: 8px; border-top: 1px solid var(--line); }
+  h3 { font-size: 1rem; margin: 20px 0 8px; }
+  p, li { margin: 8px 0; }
+  ol, ul { padding-left: 22px; }
+  a { color: var(--accent); }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.9em; }
+  code { background: var(--code-bg); padding: 2px 6px; border-radius: 4px; }
+  pre { background: var(--code-bg); padding: 12px 14px; border-radius: 8px; overflow-x: auto; }
+  pre code { background: none; padding: 0; }
+  .tagline { color: var(--muted); margin: 0 0 16px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; margin: 16px 0; }
+  .buttons { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0 4px; }
+  .button {
+    display: inline-block; padding: 10px 16px; border-radius: 8px; text-decoration: none;
+    border: 1px solid var(--accent); color: var(--accent); font-weight: 600;
+  }
+  .button.primary { background: var(--accent); color: #fff; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.95em; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+  .buy { color: var(--buy); font-weight: 600; }
+  .sell { color: var(--sell); font-weight: 600; }
+  .muted { color: var(--muted); font-size: 0.92em; }
+  footer { margin-top: 48px; color: var(--muted); font-size: 0.9em; }
+  @media (max-width: 480px) { h1 { font-size: 1.6rem; } th, td { padding: 6px; } }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Market Screener</h1>
+<p class="tagline">A free Google Sheets screener for US and India stocks, commodities, and crypto. It runs on Google's servers every morning and emails you the signals.</p>
+
+<div class="buttons">
+  <a class="button primary" href="https://github.com/rahuling/market-screener/archive/refs/heads/main.zip">Download ZIP</a>
+  <a class="button" href="https://github.com/rahuling/market-screener">View on GitHub</a>
+</div>
+
+<h2>What it does</h2>
+<ul>
+  <li><strong>Watchlists in a Google Sheet.</strong> One tab each for US Stocks, India Stocks, Commodities (gold, silver, oil), and Crypto. Add or remove assets by editing rows. Untick a checkbox to pause one.</li>
+  <li><strong>Signals.</strong> Breaches and crosses of the 20, 50, and 200-day averages, golden and death crosses, Darvas box breakouts, RSI extremes, and volume spikes.</li>
+  <li><strong>Results in the same sheet.</strong> A Results tab with every asset, an Alerts tab with only the flagged ones, and a Log tab for errors.</li>
+  <li><strong>Daily email digest</strong> at 7am IST, after the Indian close and the previous US close.</li>
+</ul>
+
+<h2>Signals</h2>
+<table>
+  <tr><th>Signal</th><th>Meaning</th></tr>
+  <tr><td><span class="buy">BUY: crossed above 20/50/200DMA</span></td><td>Price moved from below an average to above it since the previous close.</td></tr>
+  <tr><td><span class="sell">SELL: crossed below 20/50/200DMA</span></td><td>Price moved from above an average to below it.</td></tr>
+  <tr><td><span class="buy">BUY: golden cross</span> / <span class="sell">SELL: death cross</span></td><td>The shorter average crosses the longer one (20/50 or 50/200).</td></tr>
+  <tr><td><span class="buy">BUY: broke above Darvas box top</span> / <span class="sell">SELL: broke below Darvas box bottom</span></td><td>The close moves beyond the edge of the most recent Darvas box.</td></tr>
+  <tr><td>Oversold / Overbought</td><td>RSI(14) below 30 or above 70.</td></tr>
+  <tr><td>Volume spike</td><td>Today's volume is at least 2x the 20-day average.</td></tr>
+  <tr><td>Trend</td><td>"Bullish stack" when price &gt; 20 &gt; 50 &gt; 200-day average, "Bearish stack" for the reverse, otherwise "Mixed". Shown on Results, not alerted on.</td></tr>
+</table>
+
+<h2>Get started</h2>
+
+<h3>1. Download the code</h3>
+<p>Either download the <a href="https://github.com/rahuling/market-screener/archive/refs/heads/main.zip">ZIP</a> and unzip it, or clone the repo:</p>
+<pre><code>git clone https://github.com/rahuling/market-screener.git</code></pre>
+<p class="muted">You only need <code>Code.gs</code> and <code>appsscript.json</code>. The rest of the repo is documentation.</p>
+
+<h3>2. Create the Apps Script project</h3>
+<ol>
+  <li>Go to <a href="https://script.google.com">script.google.com</a> and click <strong>New project</strong>.</li>
+  <li>Replace the contents of <code>Code.gs</code> with the file from the repo.</li>
+  <li>Open <strong>Project Settings</strong> (gear icon), tick <strong>Show "appsscript.json" manifest file in editor</strong>, then go back to the editor. Replace the contents of <code>appsscript.json</code> with the file from the repo.</li>
+  <li>Save with Ctrl+S (Cmd+S on a Mac) and rename the project to <em>Market Screener</em>.</li>
+</ol>
+
+<h3>3. Run it once</h3>
+<ol>
+  <li>In the function dropdown at the top, choose <code>runScreener</code> and click <strong>Run</strong>.</li>
+  <li>Approve the permissions when asked. Google will show an "unverified app" warning because the script is your own. Click <strong>Advanced</strong>, then continue.</li>
+  <li>The run creates a spreadsheet called <em>Market Screener</em> in your Drive, with the four watchlist tabs, and emails you a digest.</li>
+</ol>
+
+<h3>4. Schedule the daily run</h3>
+<p>Choose <code>setupDailyTrigger</code> from the dropdown and click <strong>Run</strong> once. It schedules <code>runScreener</code> every day at 7am.</p>
+
+<h3>5. Edit your watchlist</h3>
+<p>Open the spreadsheet and edit the input tabs:</p>
+<ul>
+  <li><strong>Add:</strong> type a symbol and name in a new row, then tick <em>Enabled</em>.</li>
+  <li><strong>Pause:</strong> untick <em>Enabled</em>.</li>
+  <li><strong>Remove:</strong> delete the row.</li>
+</ul>
+<table>
+  <tr><th>Tab</th><th>Symbol format</th><th>Example</th></tr>
+  <tr><td>US Stocks</td><td>Ticker</td><td><code>AAPL</code></td></tr>
+  <tr><td>India Stocks</td><td>NSE ticker with <code>.NS</code> (or <code>.BO</code> for BSE)</td><td><code>TCS.NS</code></td></tr>
+  <tr><td>Commodities</td><td>Yahoo Finance futures symbol</td><td><code>GC=F</code> gold, <code>SI=F</code> silver, <code>CL=F</code> WTI oil</td></tr>
+  <tr><td>Crypto</td><td>CoinGecko id (lowercase name in the coin's URL)</td><td><code>bitcoin</code>, <code>avalanche-2</code></td></tr>
+</table>
+<p class="muted">The next run picks up your changes. Nothing else needs to be edited.</p>
+
+<h2>Notes</h2>
+<ul>
+  <li>Yahoo Finance and CoinGecko are free and unofficial. They can change or rate-limit requests. Check the Log tab if a run has errors.</li>
+  <li>Crypto uses daily closes only, so the Darvas box for crypto is approximate.</li>
+  <li>Assets need at least 201 days of history to compute the 200-day average. Newer listings are skipped and logged.</li>
+  <li>This is a screening tool for research and learning, not investment advice.</li>
+</ul>
+
+<footer>
+  Source and full documentation: <a href="https://github.com/rahuling/market-screener">github.com/rahuling/market-screener</a>
+</footer>
+
+</main>
+</body>
+</html>

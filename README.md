@@ -1,5 +1,7 @@
 # Market Screener (Apps Script)
 
+**Website with download and setup steps: https://rahuling.github.io/market-screener/**
+
 Screens a watchlist of stocks (US and India), commodities (gold, silver, oil) and crypto. The watchlist lives in a Google Sheet, so you add and remove assets there without touching code. Results go to the same sheet, and you get a daily email of alerts.
 
 ## The sheet
